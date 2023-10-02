@@ -1,7 +1,5 @@
-import React, { useState } from "react";
-import { PostAxiosData } from "../../api/ApiMethods";
-
-
+import React, { useState, useEffect } from "react";
+import { PostAxiosData, GetAxiosData } from "../../api/ApiMethods";
 const AddStudentForm = () => {
     const [formData, setFormData] = useState({
         user_name: "",
@@ -16,12 +14,51 @@ const AddStudentForm = () => {
         coursename: "",
         course_id: 1,
         status: 1,
+        website_id: "",
     });
+    const [websites, setWebsites] = useState([]);
+    const [course, setCourse] = useState([]);
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
             [name]: value,
+        });
+    };
+    useEffect(() => {
+        // Fetch website data from the API
+        const fetchWebsites = async () => {
+            try {
+                const response = await GetAxiosData('/website');
+                setWebsites(response.data.result);
+            } catch (error) {
+                console.error("Error fetching website data:", error);
+            }
+        };
+        fetchWebsites();
+    }, []);
+    useEffect(() => {
+        // Fetch course data from the API based on website_id
+        const fetchCourse = async () => {
+            try {
+                const response = await GetAxiosData(`/dropdown/getcoursebywebsite?website_id=${formData.website_id}&status=1`);
+                setCourse(response.data.result);
+            } catch (error) {
+                console.error("Error fetching course data:", error);
+            }
+        };
+        // Only fetch courses if a website_id is selected
+        if (formData.website_id) {
+            fetchCourse();
+        }
+    }, [formData.website_id]); // Trigger effect whenever website_id changes
+
+
+    const handleWebsiteChange = (e) => {
+        const selectedWebsiteId = e.target.value;
+        setFormData({
+            ...formData,
+            website_id: selectedWebsiteId,
         });
     };
     const handleSubmit = async (e) => {
@@ -32,7 +69,6 @@ const AddStudentForm = () => {
             // Send the formData to the API using PostAxiosData
             const response = await PostAxiosData('/students', formData); // Replace '/students' with the appropriate API endpoint
             console.log("Data saved successfully:", response.data);
-
             // Clear the form fields
             setFormData({
                 user_name: "",
@@ -47,6 +83,7 @@ const AddStudentForm = () => {
                 coursename: "",
                 course_id: "",
                 status: "",
+                website_id: formData.website_id,
             });
         } catch (error) {
             console.error("Error saving data:", error);
@@ -186,6 +223,22 @@ const AddStudentForm = () => {
                 </select>
             </div>
             <div className="col-lg-6 col-sm-6">
+                <label for="inputWebsite" className="form-label">Website</label>
+                <select
+                    id="inputWebsite"
+                    className="form-select"
+                    name="website_id"
+                    value={formData.website_id}
+                    onChange={handleWebsiteChange}
+                    required
+                >
+                    <option value="" disabled>Choose...</option>
+                    {websites.map(website => (
+                        <option key={website.id} value={website.id}>{website.domain_name}</option>
+                    ))}
+                </select>
+            </div>
+            <div className="col-lg-6 col-sm-6">
                 <label for="inputCourse" className="form-label">Course</label>
                 <select
                     id="inputCourse"
@@ -196,23 +249,9 @@ const AddStudentForm = () => {
                     required
                 >
                     <option value="" disabled>Choose...</option>
-                    <option value="12HoursADI">12hoursADI</option>
-                    <option value="4HoursADI">4hours</option>
-                </select>
-            </div>
-            <div className="col-lg-6 col-sm-6">
-                <label for="inputWebsite" className="form-label">Website</label>
-                <select
-                    id="inputCourse"
-                    className="form-select"
-                    name="website_id"
-                    value={formData.coursename}
-                    onChange={handleChange}
-                    required
-                >
-                    <option value="" disabled>Choose...</option>
-                    <option value="2">12 Hours Online ADI</option>
-                    <option value="1">16HoursADI</option>
+                    {course.map(course => (
+                        <option key={course.id} value={course.id}>{course.crs_title}</option>
+                    ))}
                 </select>
             </div>
 
