@@ -20,4 +20,8 @@ const DeleteAxiosData = (apiUrl) => {
     return api
         .delete(apiUrl)
 }
-export { GetAxiosData, PostAxiosData, DeleteAxiosData };
+const EditAxiosData = (apiUrl, formData) => {
+    return api
+        .put(apiUrl,formData)
+}
+export { GetAxiosData, PostAxiosData, DeleteAxiosData, EditAxiosData };

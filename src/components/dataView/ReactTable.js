@@ -1,13 +1,13 @@
-import React, { useState,useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useTable, usePagination } from 'react-table';
 import FormModal from '../modal/FormModal';
 import Swal from 'sweetalert2';
 import { DeleteAxiosData } from '../../api/ApiMethods';
 import { ContextApi } from '../contextApi/ContextApi';
-import EditForm from '../form/Editorm';
+import EditForm from '../form/EdiForm';
 const ReactTable = ({ data }) => {
   const { refresh, setRefresh } = useContext(ContextApi);
-  const [editShow, setEditShow] =  useState(false);
+  const [editShow, setEditShow] = useState(false);
   const handleDelete = (id) => {
     Swal.fire({
       title: 'Are you sure?',
@@ -30,14 +30,21 @@ const ReactTable = ({ data }) => {
       }
     });
   };
-  const handleEdit = () =>{
-    setEditShow(true)
+  const [editData, setEditData] = useState(null);
+
+  const handleEdit = (rowData) => {
+    setEditData(rowData);
+    setEditShow(true);
   }
   const columns = React.useMemo(
     () => [
       {
         Header: 'User ID',
         accessor: 'id',
+      },
+      {
+        Header: 'User name',
+        accessor: 'user_name',
       },
       {
         Header: 'Role',
@@ -74,7 +81,7 @@ const ReactTable = ({ data }) => {
             <i
               className="fa-solid fa-user-pen me-2 mx-2"
               style={{ color: "#ffa50a", cursor: 'pointer' }}
-              onClick={() => handleEdit()}
+              onClick={() => handleEdit(row.original)}
             ></i>
             <i
               className="fa-solid fa-trash me-2 mx-2"
@@ -87,7 +94,6 @@ const ReactTable = ({ data }) => {
     ],
     []
   );
-
   const {
     getTableProps,
     getTableBodyProps,
@@ -114,9 +120,11 @@ const ReactTable = ({ data }) => {
     <>
       <FormModal />
       <div className=' container'>
-        {editShow && <div className=' col-lg-12'>
-          <EditForm />
-        </div>}
+        {editShow && (
+          <div className='col-lg-12'>
+            <EditForm editData={editData} />
+          </div>
+        )}
       </div>
       <div className="container mt-5">
         <table className="table" {...getTableProps()}>
@@ -142,7 +150,6 @@ const ReactTable = ({ data }) => {
             })}
           </tbody>
         </table>
-
         <div className="pagination">
           <button onClick={() => previousPage()} disabled={!canPreviousPage}>
             Previous
