@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import { PostAxiosData, GetAxiosData } from "../../api/ApiMethods";
+import { ContextApi } from '../contextApi/ContextApi';
+import Swal from "sweetalert2";
 const AddStudentForm = () => {
+    const { refresh, setRefresh } = useContext(ContextApi);
     const [formData, setFormData] = useState({
         user_name: "",
         password: "",
@@ -63,32 +66,39 @@ const AddStudentForm = () => {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData);
-
+      
         try {
-            // Send the formData to the API using PostAxiosData
-            const response = await PostAxiosData('/students', formData); // Replace '/students' with the appropriate API endpoint
-            console.log("Data saved successfully:", response.data);
-            // Clear the form fields
-            setFormData({
-                user_name: "",
-                password: "",
-                first_name: "",
-                last_name: "",
-                email: "",
-                phone: "",
-                dob: "",
-                gender: "",
-                role: "",
-                coursename: "",
-                course_id: "",
-                status: "",
-                website_id: formData.website_id,
-            });
+          const response = await PostAxiosData('/students', formData);
+          console.log("Data saved successfully:", response.data);
+      
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Form submitted successfully!',
+          });
+      
+          setFormData({
+            user_name: "",
+            password: "",
+            first_name: "",
+            last_name: "",
+            email: "",
+            phone: "",
+            dob: "",
+            gender: "",
+            role: "",
+            coursename: "",
+            course_id: "",
+            status: "",
+            website_id: "",
+          });
+          setRefresh("2");
+
         } catch (error) {
-            console.error("Error saving data:", error);
+          console.error("Error saving data:", error);
+          setRefresh("1");
         }
-    };
+      };
     return (
         <form className="row g-3" onSubmit={handleSubmit}>
             <div className="col-lg-6 col-sm-6">

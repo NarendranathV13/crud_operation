@@ -1,14 +1,38 @@
-import React from 'react';
+import React, { useState,useContext } from 'react';
 import { useTable, usePagination } from 'react-table';
 import FormModal from '../modal/FormModal';
-
+import Swal from 'sweetalert2';
+import { DeleteAxiosData } from '../../api/ApiMethods';
+import { ContextApi } from '../contextApi/ContextApi';
+import EditForm from '../form/Editorm';
 const ReactTable = ({ data }) => {
+  const { refresh, setRefresh } = useContext(ContextApi);
+  const [editShow, setEditShow] =  useState(false);
   const handleDelete = (id) => {
-    // Implement your delete logic here, using the id parameter
-    console.log(`Delete clicked for user with ID ${id}`);
-    // Add your delete logic here
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this user!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await DeleteAxiosData(`/students/${id}`);
+          Swal.fire('Deleted!', 'The user has been deleted.', 'success');
+          setRefresh("3")
+        } catch (error) {
+          setRefresh("1")
+          console.error(`Error deleting user with ID ${id}:`, error);
+          Swal.fire('Error', 'An error occurred while deleting the user.', 'error');
+        }
+      }
+    });
   };
-
+  const handleEdit = () =>{
+    setEditShow(true)
+  }
   const columns = React.useMemo(
     () => [
       {
@@ -50,6 +74,7 @@ const ReactTable = ({ data }) => {
             <i
               className="fa-solid fa-user-pen me-2 mx-2"
               style={{ color: "#ffa50a", cursor: 'pointer' }}
+              onClick={() => handleEdit()}
             ></i>
             <i
               className="fa-solid fa-trash me-2 mx-2"
@@ -88,6 +113,11 @@ const ReactTable = ({ data }) => {
   return (
     <>
       <FormModal />
+      <div className=' container'>
+        {editShow && <div className=' col-lg-12'>
+          <EditForm />
+        </div>}
+      </div>
       <div className="container mt-5">
         <table className="table" {...getTableProps()}>
           <thead>
