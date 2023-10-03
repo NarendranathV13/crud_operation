@@ -8,6 +8,7 @@ import EditForm from '../form/EdiForm';
 const ReactTable = ({ data, handleSort }) => {
   const { refresh, setRefresh } = useContext(ContextApi);
   const [editShow, setEditShow] = useState(false);
+  //delete the ID 
   const handleDelete = (id) => {
     Swal.fire({
       title: 'Are you sure?',
@@ -31,7 +32,6 @@ const ReactTable = ({ data, handleSort }) => {
     });
   };
   const [editData, setEditData] = useState(null);
-
   const handleEdit = (rowData) => {
     setEditData(rowData);
     setEditShow(true);
@@ -128,6 +128,7 @@ const ReactTable = ({ data, handleSort }) => {
           </div>
         )}
       </div>
+   
       <div className="container mt-5">
         <table className="table" {...getTableProps()}>
         <thead>
