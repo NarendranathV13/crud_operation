@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useTable, usePagination,useSortBy } from 'react-table';
+import { useTable, usePagination, useSortBy } from 'react-table';
 import FormModal from '../modal/FormModal';
 import Swal from 'sweetalert2';
 import { DeleteAxiosData } from '../../api/ApiMethods';
@@ -32,7 +32,7 @@ const ReactTable = ({ data, handleSort }) => {
       }
     });
   };
-
+  // geting the data of selected row and updating the state
   const handleEdit = (rowData) => {
     setEditData(rowData);
     setEditShow(true);
@@ -52,8 +52,12 @@ const ReactTable = ({ data, handleSort }) => {
         accessor: 'role',
       },
       {
-        Header: 'Full Name',
-        accessor: d => `${d.first_name} ${d.last_name}`,
+        Header: 'First Name',
+        accessor:'first_name',
+      },
+      {
+        Header: 'Last Name',
+        accessor:'last_name',
       },
       {
         Header: 'Email',
@@ -116,7 +120,7 @@ const ReactTable = ({ data, handleSort }) => {
     },
     useSortBy,
     usePagination
-    
+
   );
 
   return (
@@ -125,29 +129,30 @@ const ReactTable = ({ data, handleSort }) => {
       <div className=' container'>
         {editShow && (
           <div className='col-lg-12'>
-            <EditForm editData={editData} />
+            {/*  row data is passed to Editform */}
+            <EditForm editData={editData} setEditShow={setEditShow}  />
           </div>
         )}
       </div>
-   
+
       <div className="container mt-5">
         <table className="table" {...getTableProps()}>
-        <thead>
-      {headerGroups.map(headerGroup => (
-        <tr {...headerGroup.getHeaderGroupProps()}>
-          {headerGroup.headers.map(column => (
-            <th
-              {...column.getHeaderProps(column.getSortByToggleProps())}
-              onClick={() => handleSort(column)}
-              className={column.isSorted ? (column.isSortedDesc ? 'desc' : 'asc') : ''}
-            >
-              {column.render('Header')}
-              {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
-            </th>
-          ))}
-        </tr>
-      ))}
-    </thead>
+          <thead>
+            {headerGroups.map(headerGroup => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map(column => (
+                  <th
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                    onClick={() => handleSort(column)}
+                    className={column.isSorted ? (column.isSortedDesc ? 'desc' : 'asc') : ''}
+                  >
+                    {column.render('Header')}
+                    {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
           <tbody {...getTableBodyProps()}>
             {page.map(row => {
               prepareRow(row);

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { EditAxiosData } from '../../api/ApiMethods'; // Import the EditAxiosData method
 import { ContextApi } from "../contextApi/ContextApi";
-const EditForm = ({ editData }) => {
+import Swal from "sweetalert2";
+const EditForm = ({ editData ,setEditShow }) => {
     const { refresh, setRefresh } = useContext(ContextApi);
     const [formData, setFormData] = useState({
         first_name: "",
@@ -68,6 +69,12 @@ const EditForm = ({ editData }) => {
             .then(() => {
                 setRefresh("4")
                 console.log('Data successfully edited and saved to the API!');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Data changed successfully!',
+                  });
+                  setEditShow(false);
             })
             .catch(error => {
                 console.error('Error editing data:', error, formData);
