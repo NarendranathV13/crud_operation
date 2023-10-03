@@ -8,6 +8,7 @@ import EditForm from '../form/EdiForm';
 const ReactTable = ({ data, handleSort }) => {
   const { refresh, setRefresh } = useContext(ContextApi);
   const [editShow, setEditShow] = useState(false);
+  const [editData, setEditData] = useState(null);
   //delete the ID 
   const handleDelete = (id) => {
     Swal.fire({
@@ -31,7 +32,7 @@ const ReactTable = ({ data, handleSort }) => {
       }
     });
   };
-  const [editData, setEditData] = useState(null);
+
   const handleEdit = (rowData) => {
     setEditData(rowData);
     setEditShow(true);
