@@ -8,10 +8,9 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
     return config;
   });
-const GetAxiosData = (apiUrl) => {
-    return api
-        .get(apiUrl)
-}
+  const GetAxiosData = (apiUrl, params) => {
+    return api.get(apiUrl, { params });
+  }
 const PostAxiosData = (apiUrl, formData) => {
     return api
         .post(apiUrl, formData)

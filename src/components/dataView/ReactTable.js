@@ -1,11 +1,11 @@
 import React, { useState, useContext } from 'react';
-import { useTable, usePagination } from 'react-table';
+import { useTable, usePagination,useSortBy } from 'react-table';
 import FormModal from '../modal/FormModal';
 import Swal from 'sweetalert2';
 import { DeleteAxiosData } from '../../api/ApiMethods';
 import { ContextApi } from '../contextApi/ContextApi';
 import EditForm from '../form/EdiForm';
-const ReactTable = ({ data }) => {
+const ReactTable = ({ data, handleSort }) => {
   const { refresh, setRefresh } = useContext(ContextApi);
   const [editShow, setEditShow] = useState(false);
   const handleDelete = (id) => {
@@ -113,7 +113,9 @@ const ReactTable = ({ data }) => {
       data,
       initialState: { pageIndex: 0, pageSize: 5 },
     },
+    useSortBy,
     usePagination
+    
   );
 
   return (
@@ -128,15 +130,22 @@ const ReactTable = ({ data }) => {
       </div>
       <div className="container mt-5">
         <table className="table" {...getTableProps()}>
-          <thead>
-            {headerGroups.map(headerGroup => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map(column => (
-                  <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-                ))}
-              </tr>
-            ))}
-          </thead>
+        <thead>
+      {headerGroups.map(headerGroup => (
+        <tr {...headerGroup.getHeaderGroupProps()}>
+          {headerGroup.headers.map(column => (
+            <th
+              {...column.getHeaderProps(column.getSortByToggleProps())}
+              onClick={() => handleSort(column)}
+              className={column.isSorted ? (column.isSortedDesc ? 'desc' : 'asc') : ''}
+            >
+              {column.render('Header')}
+              {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
+            </th>
+          ))}
+        </tr>
+      ))}
+    </thead>
           <tbody {...getTableBodyProps()}>
             {page.map(row => {
               prepareRow(row);
